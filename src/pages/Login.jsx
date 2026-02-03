@@ -15,7 +15,7 @@ const Login = () => {
             navigate('/');
         } catch (error) {
             console.error("Error signing in with Google: ", error);
-            alert("Failed to sign in. Please check your connection and try again.");
+            alert(`Failed to sign in: ${error.message}`);
         }
     };
 
@@ -26,7 +26,7 @@ const Login = () => {
             navigate('/');
         } catch (error) {
             console.error("Error signing in with Apple: ", error);
-            alert("Failed to sign in with Apple. Please check your connection and try again.");
+            alert(`Failed to sign in with Apple: ${error.message}`);
         }
     };
 

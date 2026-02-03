@@ -4,6 +4,7 @@ import { AuthProvider } from './context/AuthContext';
 import LandingPage from './pages/LandingPage';
 import Login from './pages/Login';
 import ProblemBank from './pages/ProblemBank';
+import Profile from './pages/Profile';
 import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
 
@@ -19,6 +20,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <ProblemBank />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
               </ProtectedRoute>
             }
           />

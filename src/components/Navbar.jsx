@@ -48,7 +48,11 @@ const Navbar = () => {
 
           {currentUser ? (
             <>
-              <li className="user-greeting">Hi, {currentUser.displayName?.split(' ')[0] || 'User'}</li>
+              <li className="user-greeting">
+                <Link to="/profile" className="profile-link">
+                  Hi, {currentUser.displayName?.split(' ')[0] || 'User'}
+                </Link>
+              </li>
               <li><button onClick={handleLogout} className="nav-btn-link">Logout</button></li>
             </>
           ) : (

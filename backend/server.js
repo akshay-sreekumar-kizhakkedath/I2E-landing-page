@@ -19,10 +19,10 @@ app.use(cors());
 app.use(express.json());
 
 // Connect to MongoDB
-// mongoose.connect(MONGODB_URI)
-//     .then(() => console.log('MongoDB connected'))
-//     .catch(err => console.error('MongoDB connection error:', err));
-console.log('MongoDB connection skipped (Disconnected by user request)');
+mongoose.connect(MONGODB_URI)
+    .then(() => console.log('MongoDB connected'))
+    .catch(err => console.error('MongoDB connection error:', err));
+
 
 // Routes
 
