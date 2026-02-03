@@ -1,28 +1,29 @@
-import React, { useState } from 'react';
-import Navbar from './components/Navbar';
-import Hero from './components/Hero';
-import About from './components/About';
-import Events from './components/Events';
-import JoinUs from './components/JoinUs';
-import Contact from './components/Contact';
-import Footer from './components/Footer';
-
-import FluidBackground from './components/FluidBackground';
-import SmoothScroll from './components/SmoothScroll';
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import LandingPage from './pages/LandingPage';
+import Login from './pages/Login';
+import ProblemBank from './pages/ProblemBank';
+import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
 
 function App() {
   return (
     <div className="App">
-      <SmoothScroll />
-      <FluidBackground />
-      <Navbar />
-      <Hero />
-      <About />
-      <Events />
-      <JoinUs />
-      <Contact />
-      <Footer />
+      <AuthProvider>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={<Login />} />
+          <Route
+            path="/problems"
+            element={
+              <ProtectedRoute>
+                <ProblemBank />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </AuthProvider>
     </div>
   );
 }

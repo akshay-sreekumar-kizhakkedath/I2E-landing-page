@@ -89,3 +89,22 @@
         /* simple helper for now, usually would add hamburger */
     }
 }
+
+.nav-btn-link {
+    background: none;
+    border: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    text-decoration: none;
+    padding: 0;
+}
+
+.nav-btn-link:hover {
+    color: #4facfe;
+}
+
+.user-greeting {
+    color: #4facfe;
+    font-weight: bold;
+}

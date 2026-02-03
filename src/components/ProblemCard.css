@@ -1,0 +1,167 @@
+.problem-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 1.5rem;
+    transition: transform 0.3s, box-shadow 0.3s;
+    display: flex;
+    flex-direction: column;
+}
+
+.problem-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    border-color: rgba(79, 172, 254, 0.3);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    font-size: 0.8rem;
+}
+
+.department-tag {
+    background: rgba(79, 172, 254, 0.1);
+    color: #4facfe;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-weight: bold;
+}
+
+.date-tag {
+    color: #666;
+}
+
+.problem-title {
+    font-size: 1.4rem;
+    margin-bottom: 0.8rem;
+    color: #fff;
+}
+
+.problem-description {
+    color: #b0b0b0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+    flex-grow: 1;
+}
+
+.card-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+.author-info .label {
+    color: #666;
+    margin-right: 5px;
+}
+
+.author-info .value {
+    color: #e0e0e0;
+}
+
+.solutions-info .count {
+    color: #4facfe;
+}
+
+.actions-section {
+    margin-bottom: 1rem;
+}
+
+.toggle-solution-btn {
+    width: 100%;
+    background: transparent;
+    border: 1px solid #4facfe;
+    color: #4facfe;
+    padding: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.toggle-solution-btn:hover {
+    background: rgba(79, 172, 254, 0.1);
+}
+
+.login-hint {
+    text-align: center;
+    color: #666;
+    font-size: 0.9rem;
+    font-style: italic;
+}
+
+.solution-form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 1rem;
+    animation: fadeIn 0.3s;
+}
+
+.solution-form input {
+    flex: 1;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 8px;
+    border-radius: 6px;
+    color: #fff;
+}
+
+.solution-form button {
+    background: #4facfe;
+    border: none;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.solutions-list {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+}
+
+.solutions-list h4 {
+    color: #888;
+    margin-bottom: 5px;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.solutions-list ul {
+    list-style: none;
+    padding: 0;
+}
+
+.solutions-list li {
+    margin-bottom: 4px;
+}
+
+.solutions-list a {
+    color: #a0a0a0;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.solutions-list a:hover {
+    color: #4facfe;
+    text-decoration: underline;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}

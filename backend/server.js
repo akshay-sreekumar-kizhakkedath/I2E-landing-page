@@ -6,6 +6,7 @@ import Event from './models/Event.js';
 import Visitor from './models/Visitor.js';
 import Contact from './models/Contact.js';
 import Application from './models/Application.js';
+import Problem from './models/Problem.js';
 
 dotenv.config();
 
@@ -116,6 +117,68 @@ app.post('/api/applications', async (req, res) => {
     } catch (error) {
         console.error('Error submitting application:', error);
         res.status(500).json({ message: 'Server error while submitting application' });
+    }
+});
+
+// --- Problem Statement Bank Routes ---
+
+// Get all problems
+app.get('/api/problems', async (req, res) => {
+    try {
+        const problems = await Problem.find().sort({ createdAt: -1 });
+        res.json(problems);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Create a new problem
+app.post('/api/problems', async (req, res) => {
+    try {
+        const { title, description, department, createdBy } = req.body;
+
+        if (!title || !description || !department) {
+            return res.status(400).json({ message: 'Title, description, and department are required' });
+        }
+
+        const newProblem = new Problem({
+            title,
+            description,
+            department,
+            createdBy
+        });
+
+        const savedProblem = await newProblem.save();
+        res.status(201).json(savedProblem);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+// Add a solution to a problem
+app.post('/api/problems/:id/solutions', async (req, res) => {
+    try {
+        const { link, submittedBy } = req.body;
+        const { id } = req.params;
+
+        if (!link) {
+            return res.status(400).json({ message: 'Solution link is required' });
+        }
+
+        const problem = await Problem.findById(id);
+        if (!problem) {
+            return res.status(404).json({ message: 'Problem not found' });
+        }
+
+        problem.solutions.push({
+            link,
+            submittedBy
+        });
+
+        await problem.save();
+        res.json(problem);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 });
 
