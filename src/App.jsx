@@ -1,0 +1,30 @@
+import React, { useState } from 'react';
+import Navbar from './components/Navbar';
+import Hero from './components/Hero';
+import About from './components/About';
+import Events from './components/Events';
+import JoinUs from './components/JoinUs';
+import Contact from './components/Contact';
+import Footer from './components/Footer';
+
+import FluidBackground from './components/FluidBackground';
+import SmoothScroll from './components/SmoothScroll';
+import './App.css';
+
+function App() {
+  return (
+    <div className="App">
+      <SmoothScroll />
+      <FluidBackground />
+      <Navbar />
+      <Hero />
+      <About />
+      <Events />
+      <JoinUs />
+      <Contact />
+      <Footer />
+    </div>
+  );
+}
+
+export default App;

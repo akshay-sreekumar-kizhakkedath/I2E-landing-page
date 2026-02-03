@@ -1,0 +1,25 @@
+{
+  "events": [
+    {
+      "title": "Idea Pitch 2024",
+      "date": "March 15, 2024",
+      "desc": "Present your startup ideas to industry experts."
+    },
+    {
+      "title": "Startup Workshop",
+      "date": "April 10, 2024",
+      "desc": "Hands-on session on business model canvas."
+    },
+    {
+      "title": "Alumni Talk",
+      "date": "May 5, 2024",
+      "desc": "Insights from successful entrepreneurs."
+    }
+  ],
+  "visitors": [
+    {
+      "namespace": "i2e-landing-page",
+      "count": 1034
+    }
+  ]
+}

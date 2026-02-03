@@ -1,0 +1,162 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
+
+:root {
+  /* Logo-derived Palette */
+  --primary-orange: #F2994A;
+  /* Gradient Start */
+  --primary-orange-deep: #D35400;
+  --primary-teal: #2D9CDB;
+  --primary-teal-dark: #00838F;
+  --primary-purple: #9B51E0;
+  --primary-purple-deep: #5E2065;
+
+  /* Theme Colors - Default (Dark) */
+  --bg-dark: #07070B;
+  /* Deeper black for BetterStack vibe */
+  --bg-card: rgba(255, 255, 255, 0.03);
+  --text-main: #ffffff;
+  --text-muted: #9CA3AF;
+  --border-color: rgba(255, 255, 255, 0.08);
+  --accent-gradient: linear-gradient(135deg, var(--primary-orange), var(--primary-purple));
+
+  /* Scrollbar Vars (Buttermax) */
+  --scrollbarBG: var(--bg-dark);
+  --scrollbarBorder: #ffd600;
+
+  font-family: 'Outfit', sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: dark;
+  color: var(--text-main);
+  background-color: var(--bg-dark);
+
+  /* BetterStack Grid Pattern */
+  --grid-color: var(--border-color);
+  background-image: linear-gradient(var(--grid-color) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+  background-size: 50px 50px;
+  background-position: center top;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+[data-theme="light"] {
+  --bg-dark: #f8fafc;
+  /* Cooler white/gray */
+  --bg-card: rgba(255, 255, 255, 0.7);
+  /* More opaque for glass effect */
+  --text-main: #0f172a;
+  /* Slate 900 */
+  --text-muted: #64748b;
+  /* Slate 500 */
+  --border-color: rgba(0, 0, 0, 0.1);
+  --scrollbarBG: #f1f5f9;
+  --scrollbarBorder: #fbbf24;
+
+  --grid-color: rgba(0, 0, 0, 0.05);
+
+  color-scheme: light;
+}
+
+/* Global Transitions */
+body,
+[data-theme] {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Add transitions to common elements affected by theme */
+.glass-panel,
+.navbar,
+.event-card,
+.join-us-container,
+.form-input,
+.footer {
+  transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
+}
+
+html.lenis {
+  overflow: auto;
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  width: 100%;
+  overflow-x: hidden;
+  scroll-behavior: auto;
+  pointer-events: auto;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  overflow-x: hidden;
+  /* Add a radial fade so the grid isn't too harsh everywhere */
+  background: radial-gradient(circle at 50% 0%, #151520 0%, var(--bg-dark) 80%);
+}
+
+[data-theme="light"] body {
+  background: radial-gradient(circle at 50% 0%, #e2e8f0 0%, var(--bg-dark) 80%);
+}
+
+a {
+  font-weight: 500;
+  color: var(--primary-teal);
+  text-decoration: none;
+  transition: 0.3s ease;
+}
+
+a:hover {
+  color: var(--primary-orange);
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* Scrollbar */
+/* Scrollbar (Buttermax Style) */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbarBG);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbarBorder);
+  border-radius: 20px;
+  border: 2px solid var(--scrollbarBG);
+}
+
+/* Utilities */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.gradient-text {
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  display: inline-block;
+}
+
+.glass-panel {
+  background: var(--bg-card);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+}

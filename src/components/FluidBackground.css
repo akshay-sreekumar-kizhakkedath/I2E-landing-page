@@ -1,0 +1,17 @@
+.fluid-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    /* pointer-events: none;  <-- REMOVED or else fluid won't react to mouse! */
+    /* But wait, if pointer-events is auto, it might block clicks on links?
+     The library usually listens to window events, not canvas events. 
+     If it listens to canvas, we have a problem (clicks blocked).
+     Usually, these libs attach standard window listeners (mousemove).
+     So we can safely use pointer-events: none; so we can click links. 
+     Let's try pointer-events: none first. If fluid doesn't react, we revert.
+  */
+    pointer-events: none;
+}

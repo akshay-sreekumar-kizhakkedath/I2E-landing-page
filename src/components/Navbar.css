@@ -1,0 +1,91 @@
+.navbar {
+    position: fixed;
+    top: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 1200px;
+    padding: 1rem 2rem;
+    z-index: 1000;
+    transition: all 0.3s ease;
+    border-radius: 50px;
+    /* Floating Pill */
+    border: 1px solid transparent;
+}
+
+.navbar.scrolled {
+    background: var(--bg-card);
+    /* Darker, less transparent */
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    width: 95%;
+    /* Expand slightly on scroll */
+}
+
+.navbar-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--primary-purple);
+}
+
+.logo img {
+    height: 40px;
+    width: auto;
+}
+
+.logo-text .highlight-2 {
+    color: var(--primary-teal);
+    vertical-align: super;
+    font-size: 0.8em;
+}
+
+.nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+    align-items: center;
+}
+
+.nav-links a {
+    color: var(--text-main);
+    opacity: 0.8;
+    font-size: 1rem;
+}
+
+.nav-links a:hover {
+    opacity: 1;
+    color: var(--primary-orange);
+}
+
+.cta-btn {
+    background: var(--accent-gradient);
+    padding: 0.6rem 1.5rem;
+    border-radius: 50px;
+    color: white !important;
+    font-weight: 600;
+    opacity: 1 !important;
+    box-shadow: 0 4px 15px rgba(125, 95, 255, 0.3);
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.cta-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(125, 95, 255, 0.5);
+}
+
+@media (max-width: 768px) {
+    .nav-links {
+        display: none;
+        /* simple helper for now, usually would add hamburger */
+    }
+}

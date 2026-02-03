@@ -1,0 +1,51 @@
+.events-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.event-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    padding: 2rem;
+    border-radius: 16px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s;
+}
+
+.event-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary-teal);
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+}
+
+.event-date {
+    font-size: 0.9rem;
+    color: var(--primary-teal);
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.event-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: var(--text-main);
+}
+
+.event-card p {
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+}
+
+.read-more {
+    background: transparent;
+    color: var(--primary-orange);
+    border: none;
+    font-weight: 600;
+    padding: 0;
+}
+
+.read-more:hover {
+    text-decoration: underline;
+}
