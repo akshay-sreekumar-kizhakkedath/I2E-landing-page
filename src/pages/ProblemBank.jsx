@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { getProblems, createProblem, addSolution } from '../api/problems';
+import { getProblems, createProblem, addSolution, updateProblem, deleteProblem } from '../api/problems';
 import ProblemCard from '../components/ProblemCard';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -17,6 +17,7 @@ const ProblemBank = () => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [department, setDepartment] = useState('');
+    const [editingId, setEditingId] = useState(null);
 
     useEffect(() => {
         loadProblems();
@@ -33,7 +34,15 @@ const ProblemBank = () => {
         }
     };
 
-    const handleCreateProblem = async (e) => {
+    const resetForm = () => {
+        setShowForm(false);
+        setTitle('');
+        setDescription('');
+        setDepartment('');
+        setEditingId(null);
+    };
+
+    const handleSubmitProblem = async (e) => {
         e.preventDefault();
         if (!currentUser) {
             alert('You must be logged in to post a problem.');
@@ -41,23 +50,52 @@ const ProblemBank = () => {
         }
 
         try {
-            const token = await currentUser.getIdToken();
-            const newProblem = {
-                title,
-                description,
-                department,
-                // createdBy is now handled by backend from token
-            };
+            if (editingId) {
+                // Update existing problem
+                const problemData = {
+                    title,
+                    description,
+                    department,
+                    uid: currentUser.uid // For simple permission check
+                };
+                await updateProblem(editingId, problemData);
+            } else {
+                // Create new problem
+                const newProblem = {
+                    title,
+                    description,
+                    department,
+                };
+                const token = await currentUser.getIdToken();
+                await createProblem(newProblem, token);
+            }
 
-            await createProblem(newProblem, token);
-            setShowForm(false);
-            setTitle('');
-            setDescription('');
-            setDepartment('');
+            resetForm();
             loadProblems(); // Refresh list
         } catch (error) {
-            console.error('Error creating problem:', error);
-            alert('Failed to create problem.');
+            console.error('Error saving problem:', error);
+            alert('Failed to save problem.');
+        }
+    };
+
+    const handleEdit = (problem) => {
+        setTitle(problem.title);
+        setDescription(problem.description);
+        setDepartment(problem.department);
+        setEditingId(problem._id);
+        setShowForm(true);
+        window.scrollTo(0, 0);
+    };
+
+    const handleDelete = async (problemId) => {
+        if (!window.confirm('Are you sure you want to delete this problem?')) return;
+
+        try {
+            await deleteProblem(problemId, currentUser.uid);
+            loadProblems();
+        } catch (error) {
+            console.error('Error deleting problem:', error);
+            alert('Failed to delete problem.');
         }
     };
 
@@ -71,7 +109,6 @@ const ProblemBank = () => {
             const token = await currentUser.getIdToken();
             const solutionData = {
                 link,
-                // submittedBy is now handled by backend from token
             };
             await addSolution(problemId, solutionData, token);
             loadProblems(); // Refresh list to show new solution count
@@ -90,7 +127,10 @@ const ProblemBank = () => {
                     <p>Explore challenges from various departments and contribute solutions.</p>
 
                     {currentUser && (
-                        <button className="create-btn" onClick={() => setShowForm(!showForm)}>
+                        <button className="create-btn" onClick={() => {
+                            if (showForm) resetForm();
+                            else setShowForm(true);
+                        }}>
                             {showForm ? 'Cancel' : 'Post a Problem'}
                         </button>
                     )}
@@ -98,8 +138,8 @@ const ProblemBank = () => {
 
                 {showForm && (
                     <div className="upload-form-card">
-                        <h3>Upload New Problem</h3>
-                        <form onSubmit={handleCreateProblem}>
+                        <h3>{editingId ? 'Edit Problem' : 'Upload New Problem'}</h3>
+                        <form onSubmit={handleSubmitProblem}>
                             <div className="form-group">
                                 <label>Title</label>
                                 <input
@@ -130,7 +170,9 @@ const ProblemBank = () => {
                                     rows="4"
                                 />
                             </div>
-                            <button type="submit" className="submit-btn">Publish Problem</button>
+                            <button type="submit" className="submit-btn">
+                                {editingId ? 'Update Problem' : 'Publish Problem'}
+                            </button>
                         </form>
                     </div>
                 )}
@@ -147,6 +189,8 @@ const ProblemBank = () => {
                                 problem={problem}
                                 onSubmitSolution={handleSubmitSolution}
                                 currentUser={currentUser}
+                                onEdit={handleEdit}
+                                onDelete={handleDelete}
                             />
                         ))
                     )}

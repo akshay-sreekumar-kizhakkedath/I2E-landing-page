@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import './ProblemCard.css';
 
-const ProblemCard = ({ problem, onSubmitSolution, currentUser }) => {
+const ProblemCard = ({ problem, onSubmitSolution, currentUser, onEdit, onDelete }) => {
     const [solutionLink, setSolutionLink] = useState('');
     const [showSolutionForm, setShowSolutionForm] = useState(false);
+
+    const isOwner = currentUser && problem.createdBy && currentUser.uid === problem.createdBy.uid;
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -16,7 +18,19 @@ const ProblemCard = ({ problem, onSubmitSolution, currentUser }) => {
         <div className="problem-card">
             <div className="card-header">
                 <span className="department-tag">{problem.department}</span>
-                <span className="date-tag">{new Date(problem.createdAt).toLocaleDateString()}</span>
+                <div className="header-actions">
+                    {isOwner && (
+                        <>
+                            <button className="icon-btn edit-btn" onClick={() => onEdit(problem)} title="Edit Problem">
+                                ✎
+                            </button>
+                            <button className="icon-btn delete-btn" onClick={() => onDelete(problem._id)} title="Delete Problem">
+                                🗑️
+                            </button>
+                        </>
+                    )}
+                    <span className="date-tag">{new Date(problem.createdAt).toLocaleDateString()}</span>
+                </div>
             </div>
 
             <h2 className="problem-title">{problem.title}</h2>

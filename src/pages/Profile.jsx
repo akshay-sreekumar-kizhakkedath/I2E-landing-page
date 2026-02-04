@@ -1,149 +1,194 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { db } from '../firebase';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
-import FluidBackground from '../components/FluidBackground';
+import { getProblems, updateProblem, deleteProblem, addSolution } from '../api/problems';
+import ProblemCard from '../components/ProblemCard';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
+import { signOut } from 'firebase/auth';
+import { auth } from '../firebase';
+import { useNavigate } from 'react-router-dom';
 import './Profile.css';
 
 const Profile = () => {
     const { currentUser } = useAuth();
+    const navigate = useNavigate();
+    const [problems, setProblems] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [saving, setSaving] = useState(false);
-    const [formData, setFormData] = useState({
-        displayName: '',
-        department: '',
-        year: ''
-    });
+
+    // Edit Form State
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [department, setDepartment] = useState('');
+    const [editingId, setEditingId] = useState(null);
+    const [showForm, setShowForm] = useState(false);
 
     useEffect(() => {
-        const fetchUserData = async () => {
-            if (currentUser) {
-                try {
-                    const docRef = doc(db, "users", currentUser.uid);
-                    const docSnap = await getDoc(docRef);
-
-                    if (docSnap.exists()) {
-                        setFormData({ ...docSnap.data(), displayName: currentUser.displayName || docSnap.data().displayName || '' });
-                    } else {
-                        // Pre-fill with auth data if no firestore data
-                        setFormData(prev => ({ ...prev, displayName: currentUser.displayName || '' }));
-                    }
-                } catch (error) {
-                    console.error("Error fetching user data:", error);
-                } finally {
-                    setLoading(false);
-                }
-            }
-        };
-
-        fetchUserData();
+        if (currentUser) {
+            loadUserProblems();
+        }
     }, [currentUser]);
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setSaving(true);
+    const loadUserProblems = async () => {
         try {
-            const docRef = doc(db, "users", currentUser.uid);
-            await setDoc(docRef, {
-                displayName: formData.displayName,
-                department: formData.department,
-                year: formData.year,
-                email: currentUser.email
-            }, { merge: true });
-            alert("Profile updated successfully!");
+            const data = await getProblems(currentUser.uid);
+            setProblems(data);
         } catch (error) {
-            console.error("Error updating profile:", error);
-            alert("Failed to update profile.");
+            console.error('Error fetching user problems:', error);
         } finally {
-            setSaving(false);
+            setLoading(false);
         }
     };
 
-    if (loading) return <div className="loading">Loading...</div>;
+    const handleLogout = async () => {
+        try {
+            await signOut(auth);
+            navigate('/login');
+        } catch (error) {
+            console.error("Error signing out:", error);
+        }
+    };
+
+    const handleEdit = (problem) => {
+        setTitle(problem.title);
+        setDescription(problem.description);
+        setDepartment(problem.department);
+        setEditingId(problem._id);
+        setShowForm(true);
+        window.scrollTo(0, 0); // Scroll to top to see form
+    };
+
+    const handleDelete = async (problemId) => {
+        if (!window.confirm('Are you sure you want to delete this problem?')) return;
+
+        try {
+            await deleteProblem(problemId, currentUser.uid);
+            loadUserProblems(); // Refresh list
+        } catch (error) {
+            console.error('Error deleting problem:', error);
+            alert('Failed to delete problem.');
+        }
+    };
+
+    const handleUpdateProblem = async (e) => {
+        e.preventDefault();
+        try {
+            const problemData = {
+                title,
+                description,
+                department,
+                uid: currentUser.uid
+            };
+            await updateProblem(editingId, problemData);
+
+            setShowForm(false);
+            setEditingId(null);
+            loadUserProblems();
+        } catch (error) {
+            console.error('Error updating problem:', error);
+            alert('Failed to update problem.');
+        }
+    };
+
+    const cancelEdit = () => {
+        setShowForm(false);
+        setEditingId(null);
+    };
+
+    // Solution submission is less relevant here (usually you submit to others), 
+    // but the card expects the prop, so we'll provide the handler.
+    const handleSubmitSolution = async (problemId, link) => {
+        try {
+            const solutionData = {
+                link,
+                submittedBy: {
+                    name: currentUser.displayName || currentUser.email,
+                    email: currentUser.email
+                }
+            };
+            await addSolution(problemId, solutionData);
+            loadUserProblems();
+        } catch (error) {
+            console.error('Error submitting solution:', error);
+            alert('Failed to submit solution.');
+        }
+    };
+
+    if (!currentUser) return <div>Loading...</div>;
 
     return (
-        <div className="profile-container">
-            <FluidBackground />
-            <div className="profile-card">
-                <h1>My Profile</h1>
-                <div className="profile-avatar">
-                    {currentUser.photoURL ? (
-                        <img src={currentUser.photoURL} alt="Profile" />
-                    ) : (
-                        <div className="avatar-placeholder">{formData.displayName?.charAt(0) || 'U'}</div>
-                    )}
+        <div className="profile-page">
+            <Navbar />
+            <div className="profile-container">
+                <div className="profile-header">
+                    <div className="user-info">
+                        <h1>{currentUser.displayName || 'User Profile'}</h1>
+                        <p>{currentUser.email}</p>
+                    </div>
                 </div>
 
-                <form onSubmit={handleSubmit} className="profile-form">
-                    <div className="form-group">
-                        <label>Name</label>
-                        <input
-                            type="text"
-                            name="displayName"
-                            value={formData.displayName}
-                            onChange={handleChange}
-                            placeholder="Enter your name"
-                        />
-                    </div>
+                <div className="my-problems-section">
+                    <h2 className="section-title">My Posted Problems</h2>
 
-                    <div className="form-group">
-                        <label>Email</label>
-                        <input
-                            type="email"
-                            value={currentUser.email}
-                            disabled
-                            className="disabled-input"
-                        />
-                    </div>
+                    {showForm && (
+                        <div className="upload-form-card">
+                            <h3>Edit Problem</h3>
+                            <form onSubmit={handleUpdateProblem}>
+                                <div className="form-group">
+                                    <label>Title</label>
+                                    <input
+                                        type="text"
+                                        value={title}
+                                        onChange={(e) => setTitle(e.target.value)}
+                                        required
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Department</label>
+                                    <input
+                                        type="text"
+                                        value={department}
+                                        onChange={(e) => setDepartment(e.target.value)}
+                                        required
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Description</label>
+                                    <textarea
+                                        value={description}
+                                        onChange={(e) => setDescription(e.target.value)}
+                                        required
+                                        rows="4"
+                                    />
+                                </div>
+                                <button type="submit" className="submit-btn">Update Problem</button>
+                                <button type="button" className="cancel-btn" onClick={cancelEdit}>Cancel</button>
+                            </form>
+                        </div>
+                    )}
 
-                    <div className="form-group">
-                        <label>Department</label>
-                        <select
-                            name="department"
-                            value={formData.department}
-                            onChange={handleChange}
-                        >
-                            <option value="">Select Department</option>
-                            <option value="CSE">Computer Science (CSE)</option>
-                            <option value="IT">Information Technology (IT)</option>
-                            <option value="ECE">Electronics & Communication (ECE)</option>
-                            <option value="EEE">Electrical & Electronics (EEE)</option>
-                            <option value="MECH">Mechanical Engineering</option>
-                            <option value="CIVIL">Civil Engineering</option>
-                            <option value="AIML">AI & ML</option>
-                            <option value="DS">Data Science</option>
-                            <option value="Other">Other</option>
-                        </select>
+                    <div className="problems-grid">
+                        {loading ? (
+                            <p>Loading...</p>
+                        ) : problems.length === 0 ? (
+                            <div className="no-problems">
+                                <p>You haven't posted any problems yet.</p>
+                            </div>
+                        ) : (
+                            problems.map(problem => (
+                                <ProblemCard
+                                    key={problem._id}
+                                    problem={problem}
+                                    onSubmitSolution={handleSubmitSolution}
+                                    currentUser={currentUser}
+                                    onEdit={handleEdit}
+                                    onDelete={handleDelete}
+                                />
+                            ))
+                        )}
                     </div>
-
-                    <div className="form-group">
-                        <label>current Year</label>
-                        <select
-                            name="year"
-                            value={formData.year}
-                            onChange={handleChange}
-                        >
-                            <option value="">Select Year</option>
-                            <option value="1st Year">1st Year</option>
-                            <option value="2nd Year">2nd Year</option>
-                            <option value="3rd Year">3rd Year</option>
-                            <option value="4th Year">4th Year</option>
-                        </select>
-                    </div>
-
-                    <button type="submit" className="save-btn" disabled={saving}>
-                        {saving ? 'Saving...' : 'Save Profile'}
-                    </button>
-                </form>
+                </div>
             </div>
+            <Footer />
         </div>
     );
 };

@@ -1,7 +1,11 @@
 const API_URL = 'http://localhost:5000/api/problems';
 
-export const getProblems = async () => {
-    const response = await fetch(API_URL);
+export const getProblems = async (uid) => {
+    let url = API_URL;
+    if (uid) {
+        url += `?uid=${uid}`;
+    }
+    const response = await fetch(url);
     if (!response.ok) {
         throw new Error('Failed to fetch problems');
     }
@@ -34,6 +38,34 @@ export const addSolution = async (problemId, solutionData, token) => {
     });
     if (!response.ok) {
         throw new Error('Failed to add solution');
+    }
+    return response.json();
+};
+
+export const updateProblem = async (problemId, problemData) => {
+    const response = await fetch(`${API_URL}/${problemId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(problemData),
+    });
+    if (!response.ok) {
+        throw new Error('Failed to update problem');
+    }
+    return response.json();
+};
+
+export const deleteProblem = async (problemId, uid) => {
+    const response = await fetch(`${API_URL}/${problemId}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ uid }),
+    });
+    if (!response.ok) {
+        throw new Error('Failed to delete problem');
     }
     return response.json();
 };

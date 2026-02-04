@@ -142,7 +142,12 @@ app.post('/api/applications', verifyToken, async (req, res) => {
 // Get all problems
 app.get('/api/problems', async (req, res) => {
     try {
-        const problems = await Problem.find().sort({ createdAt: -1 });
+        const { uid } = req.query;
+        let query = {};
+        if (uid) {
+            query = { 'createdBy.uid': uid };
+        }
+        const problems = await Problem.find(query).sort({ createdAt: -1 });
         res.json(problems);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -154,7 +159,11 @@ app.post('/api/problems', verifyToken, async (req, res) => {
     try {
         const { title, description, department } = req.body;
         // createdBy comes from the token for security
-        const createdBy = req.user.name || req.user.email || 'Anonymous';
+        const createdBy = {
+            name: req.user.name || req.user.email || 'Anonymous',
+            email: req.user.email,
+            uid: req.user.uid
+        };
 
         if (!title || !description || !department) {
             return res.status(400).json({ message: 'Title, description, and department are required' });
@@ -179,7 +188,11 @@ app.post('/api/problems/:id/solutions', verifyToken, async (req, res) => {
     try {
         const { link } = req.body;
         const { id } = req.params;
-        const submittedBy = req.user.name || req.user.email || 'Anonymous';
+        const submittedBy = {
+            name: req.user.name || req.user.email || 'Anonymous',
+            email: req.user.email
+            // Schema doesn't have uid for solutions yet, but we should stick to schema
+        };
 
         if (!link) {
             return res.status(400).json({ message: 'Solution link is required' });
@@ -197,6 +210,55 @@ app.post('/api/problems/:id/solutions', verifyToken, async (req, res) => {
 
         await problem.save();
         res.json(problem);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Update a problem
+app.put('/api/problems/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { title, description, department, uid } = req.body; // Expecting uid from client for now
+
+        const problem = await Problem.findById(id);
+        if (!problem) {
+            return res.status(404).json({ message: 'Problem not found' });
+        }
+
+        // Basic permission check (in production, use Firebase Admin SDK to verify token)
+        if (problem.createdBy.uid !== uid) {
+            return res.status(403).json({ message: 'You are not authorized to edit this problem' });
+        }
+
+        problem.title = title || problem.title;
+        problem.description = description || problem.description;
+        problem.department = department || problem.department;
+
+        const updatedProblem = await problem.save();
+        res.json(updatedProblem);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Delete a problem
+app.delete('/api/problems/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { uid } = req.body; // Expecting uid in body for permission check
+
+        const problem = await Problem.findById(id);
+        if (!problem) {
+            return res.status(404).json({ message: 'Problem not found' });
+        }
+
+        if (problem.createdBy.uid !== uid) {
+            return res.status(403).json({ message: 'You are not authorized to delete this problem' });
+        }
+
+        await Problem.findByIdAndDelete(id);
+        res.json({ message: 'Problem deleted successfully' });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
