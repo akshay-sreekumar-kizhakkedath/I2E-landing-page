@@ -6,6 +6,11 @@ import { getAnalytics } from "firebase/analytics";
 
 // Your web app's Firebase configuration
 // TODO: Replace with your project's config object from Firebase Console
+console.log("Firebase Config Loading:", {
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY ? "Loaded" : "Missing",
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+});
+
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
     authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
