@@ -2,17 +2,34 @@ import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import admin from 'firebase-admin';
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
+
 import Event from './models/Event.js';
 import Visitor from './models/Visitor.js';
 import Contact from './models/Contact.js';
 import Application from './models/Application.js';
 import Problem from './models/Problem.js';
+import { verifyToken } from './middleware/auth.js';
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/i2e_landing_page';
+
+// Initialize Firebase Admin
+// TRY to load the service account. If missing, warn but don't crash immediately (though auth will fail)
+try {
+    const serviceAccount = require("./serviceAccountKey.json");
+    admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount)
+    });
+    console.log("Firebase Admin Initialized");
+} catch (error) {
+    console.warn("WARNING: customized serviceAccountKey.json not found in backend/. Firebase Admin not initialized. Auth routes will fail.");
+}
 
 // Middleware
 app.use(cors());
@@ -92,8 +109,8 @@ app.post('/api/contact', async (req, res) => {
     }
 });
 
-// Submit Application Form
-app.post('/api/applications', async (req, res) => {
+// Submit Application Form [PROTECTED]
+app.post('/api/applications', verifyToken, async (req, res) => {
     try {
         const { name, email, phone, position, portfolioUrl, resumeUrl } = req.body;
 
@@ -104,7 +121,7 @@ app.post('/api/applications', async (req, res) => {
 
         const newApplication = new Application({
             name,
-            email,
+            email, // We could verify this matches req.user.email if needed
             phone,
             position,
             portfolioUrl,
@@ -132,10 +149,12 @@ app.get('/api/problems', async (req, res) => {
     }
 });
 
-// Create a new problem
-app.post('/api/problems', async (req, res) => {
+// Create a new problem [PROTECTED]
+app.post('/api/problems', verifyToken, async (req, res) => {
     try {
-        const { title, description, department, createdBy } = req.body;
+        const { title, description, department } = req.body;
+        // createdBy comes from the token for security
+        const createdBy = req.user.name || req.user.email || 'Anonymous';
 
         if (!title || !description || !department) {
             return res.status(400).json({ message: 'Title, description, and department are required' });
@@ -155,11 +174,12 @@ app.post('/api/problems', async (req, res) => {
     }
 });
 
-// Add a solution to a problem
-app.post('/api/problems/:id/solutions', async (req, res) => {
+// Add a solution to a problem [PROTECTED]
+app.post('/api/problems/:id/solutions', verifyToken, async (req, res) => {
     try {
-        const { link, submittedBy } = req.body;
+        const { link } = req.body;
         const { id } = req.params;
+        const submittedBy = req.user.name || req.user.email || 'Anonymous';
 
         if (!link) {
             return res.status(400).json({ message: 'Solution link is required' });

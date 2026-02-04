@@ -41,18 +41,15 @@ const ProblemBank = () => {
         }
 
         try {
+            const token = await currentUser.getIdToken();
             const newProblem = {
                 title,
                 description,
                 department,
-                createdBy: {
-                    name: currentUser.displayName || currentUser.email,
-                    email: currentUser.email,
-                    uid: currentUser.uid
-                }
+                // createdBy is now handled by backend from token
             };
 
-            await createProblem(newProblem);
+            await createProblem(newProblem, token);
             setShowForm(false);
             setTitle('');
             setDescription('');
@@ -71,14 +68,12 @@ const ProblemBank = () => {
         }
 
         try {
+            const token = await currentUser.getIdToken();
             const solutionData = {
                 link,
-                submittedBy: {
-                    name: currentUser.displayName || currentUser.email,
-                    email: currentUser.email
-                }
+                // submittedBy is now handled by backend from token
             };
-            await addSolution(problemId, solutionData);
+            await addSolution(problemId, solutionData, token);
             loadProblems(); // Refresh list to show new solution count
         } catch (error) {
             console.error('Error submitting solution:', error);
