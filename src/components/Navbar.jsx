@@ -32,7 +32,7 @@ const Navbar = () => {
     <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
       <div className="container navbar-content">
         <Link to="/" className="logo">
-          <img src="/logo.png" alt="I2E E-Cell Logo" />
+          <img src={`${import.meta.env.BASE_URL}logo.png`} alt="I2E E-Cell Logo" />
           <span className="logo-text">I<span className="highlight-2">2</span>E</span>
         </Link>
         <ul className="nav-links">

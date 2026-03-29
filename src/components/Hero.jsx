@@ -62,7 +62,7 @@ const Hero = () => {
                     transition={{ duration: 1 }}
                 >
                     <div className="logo-glow-container">
-                        <img src="/logo.png" alt="I2E Giant Logo" className="hero-logo floating" />
+                        <img src={`${import.meta.env.BASE_URL}logo.png`} alt="I2E Giant Logo" className="hero-logo floating" />
                     </div>
                 </motion.div>
             </div>
